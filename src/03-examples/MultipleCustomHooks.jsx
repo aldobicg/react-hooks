@@ -1,33 +1,31 @@
-
-
-import { useCounter, useFetch } from '../hooks';
-import { LoadingQuote, Quote } from './';
-
+import { useFetch, useCounter } from "../hooks";
+import { LoadingQuote, Blockquote } from "./components";
 
 export const MultipleCustomHooks = () => {
+  const { counter, reset, increment } = useCounter(1);
+  const { data, hasError, isLoading, onFetch } = useFetch(
+    `https://api.breakingbadquotes.xyz/v1/quotes/1#${counter}`
+  );
 
-    const { counter, increment } = useCounter(1);
-    const { data, isLoading, hasError } = useFetch(`https://www.breakingbadapi.com/api/quotes/${ counter }`);
-    const { author, quote } = !!data && data[0];
-    
-    return (
-        <>
-            <h1>BreakingBad Quotes</h1>
-            <hr />
+  const { quote, author } = Array.isArray(data) ? data[0] : {};
 
-            {
-                isLoading
-                 ? <LoadingQuote />
-                 : <Quote author={ author } quote={ quote } />
-            }
-                      
-            <button 
-                className="btn btn-primary"
-                disabled={ isLoading }
-                onClick={ () => increment() }>
-                Next quote
-            </button>
-
-        </>
-    )
-}
+  return (
+    <>
+      <h1>BreakingBad Quotes</h1>
+      <hr />
+      {isLoading ? (
+        <LoadingQuote />
+      ) : (
+        <Blockquote quote={quote} author={author} />
+      )}
+      <button
+        className="btn btn-primary"
+        onClick={() => {
+          increment();
+        }}
+      >
+        Next Quote
+      </button>
+    </>
+  );
+};
